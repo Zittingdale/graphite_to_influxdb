@@ -1,0 +1,9 @@
+gives index of entire graphite
+http://graphite1.prod/metrics/index.json
+
+
+
+
+gives render graphite data
+http://graphite1.prod/render?target=admin1.cpu.*&format=json
+

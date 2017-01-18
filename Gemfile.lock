@@ -1,0 +1,20 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    awesome_print (1.7.0)
+    json (1.8.6)
+    mixlib-cli (1.7.0)
+    sensu-plugin (1.4.4)
+      json (< 2.0.0)
+      mixlib-cli (>= 1.5.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  awesome_print
+  json
+  sensu-plugin
+
+BUNDLED WITH
+   1.13.6
