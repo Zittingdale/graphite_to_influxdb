@@ -26,7 +26,7 @@ require 'socket'
 require 'net/http'
 require 'uri'
 require 'json'
-require 'awesome_print'
+# require 'awesome_print' uncomment this if you will be using ap for debugging
 
 class GraphiteToInflux < Sensu::Plugin::Metric::CLI::Graphite
   option :graphite,
@@ -50,6 +50,12 @@ class GraphiteToInflux < Sensu::Plugin::Metric::CLI::Graphite
     short: '-i influx',
     long: '--influx influx',
     description: 'influx hostname/ipaddress'
+
+  option :rest,
+    short: '-r 5',
+    long: '--rest 5',
+    description: 'seconds to slepp between each meausrement. use this if your avaialbe resources get scarce',
+    default: 1
 
   option :p,
     description: 'Graphite web port',
@@ -76,6 +82,7 @@ class GraphiteToInflux < Sensu::Plugin::Metric::CLI::Graphite
 
     targets_hash.each do |target|
       puts "Currently Loading #{target}"
+      beginning_time = Time.now
       metric = open("http://#{config[:graphite]}/render?target=#{target}&format=json&from=-#{config[:history]}&until=-1min")
       # ap JSON.parse(metric), { :index => false, :plain => true, :indent => 2 }
 
@@ -89,8 +96,9 @@ class GraphiteToInflux < Sensu::Plugin::Metric::CLI::Graphite
         end
       end
       sock.close
-      puts "Finished #{target} Wrote #{count} Records"
-      sleep(1)
+      end_time = Time.now
+      puts "Finished #{target} Wrote #{count} Records in #{(end_time - beginning_time)} seconds"
+      sleep(config[:rest].to_i)
     end
     ok
   end
