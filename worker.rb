@@ -85,9 +85,12 @@ class GraphiteToInflux < Sensu::Plugin::Metric::CLI::Graphite
       beginning_time = Time.now
       metric = open("http://#{config[:graphite]}/render?target=#{target}&format=json&from=-#{config[:history]}&until=-1min")
       # ap JSON.parse(metric), { :index => false, :plain => true, :indent => 2 }
+      gq_time = Time.now #graphite querry time
 
       metric_hash = JSON.parse(metric)
       sock = TCPSocket.open("#{config[:influxdb]}", config[:in_port])
+      ip_time = Time.now #influx push time
+
       count = 0
       metric_hash[0]['datapoints'].each do |value,tstamp|
         unless value.nil? || tstamp.nil?
@@ -97,7 +100,7 @@ class GraphiteToInflux < Sensu::Plugin::Metric::CLI::Graphite
       end
       sock.close
       end_time = Time.now
-      puts "Finished #{target} Wrote #{count} Records in #{(end_time - beginning_time)} seconds"
+      puts "Finished #{target} Wrote #{count} Records in #{(end_time - beginning_time)} seconds Graphite querry took #{(gq_time - beginning_time)} seconds influx push took #{(end_time - ip_time)} seconds"
       sleep(config[:rest].to_i)
     end
     ok
